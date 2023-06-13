@@ -35,9 +35,6 @@ class GUI : JFrame("Rich Text Box Example") {
         counterPanel.add(Box.createRigidArea(Dimension(10, 0))) // Add spacing
         counterPanel.add(fileNameLabel)
 
-
-
-
         val panel = JPanel(BorderLayout())
         panel.add(counterPanel, BorderLayout.WEST)
         panel.border = EmptyBorder(5, 5, 5, 5) // Add padding
@@ -70,7 +67,8 @@ class GUI : JFrame("Rich Text Box Example") {
 
         val openMenuItem = JMenuItem("Open")
         val saveMenuItem = JMenuItem("Save")
-        val exitMenuItem = JMenuItem("Exit")
+        val newMenuItem = JMenuItem("New") // New menu item
+        val exitMenuItem = JMenuItem("Exit") // Exit menu item
 
         val fontMenuItem = JMenuItem("Font")
         val textColorMenuItem = JMenuItem("Text Color")
@@ -103,6 +101,12 @@ class GUI : JFrame("Rich Text Box Example") {
                 file.writeText(textPane.text)
                 fileNameLabel.text = file.name
             }
+        }
+
+        newMenuItem.addActionListener {
+            // Handle New action
+            textPane.text = ""
+            fileNameLabel.text = "Untitled"
         }
 
         exitMenuItem.addActionListener {
@@ -171,8 +175,9 @@ class GUI : JFrame("Rich Text Box Example") {
 
         fileMenu.add(openMenuItem)
         fileMenu.add(saveMenuItem)
+        fileMenu.add(newMenuItem) // Add New menu item
         fileMenu.addSeparator()
-        fileMenu.add(exitMenuItem)
+        fileMenu.add(exitMenuItem) // Add Exit menu item
 
         styleMenu.add(fontMenuItem)
         styleMenu.add(textColorMenuItem)
