@@ -2,15 +2,14 @@ import javax.swing.*
 import javax.swing.event.CaretListener
 import javax.swing.event.CaretEvent
 import java.awt.*
-import java.awt.event.WindowAdapter
-import java.awt.event.WindowEvent
 import java.beans.Expression
 import java.io.File
 import javax.swing.filechooser.FileNameExtensionFilter
-import javax.swing.border.EmptyBorder
 import javax.swing.text.*
+import java.awt.GraphicsEnvironment
+import javax.swing.border.EmptyBorder
 
-class GUI : JFrame("Rich Text Box Example") {
+class ImprovedGUI : JFrame("Rich Text Box Example") {
     private val textPane: JTextPane = JTextPane()
     private val fileNameLabel: JLabel = JLabel("Untitled")
     private val lineCounter: JLabel = JLabel("Line: 1")
@@ -76,47 +75,24 @@ class GUI : JFrame("Rich Text Box Example") {
         val editorMenu = JMenu("Editor")
         val spacingMenuItem = JMenuItem("Spacing")
 
-        openMenuItem.addActionListener {
-            // Handle Open action
-            val fileChooser = JFileChooser()
-            val filter = FileNameExtensionFilter("Text files", "txt")
-            fileChooser.fileFilter = filter
-            val result = fileChooser.showOpenDialog(null)
-            if (result == JFileChooser.APPROVE_OPTION) {
-                val file = fileChooser.selectedFile
-                val text = file.readText()
-                textPane.text = text
-                fileNameLabel.text = file.name
-            }
-        }
+        // Open menu item action
+        openMenuItem.addActionListener { openFile(textPane) }
 
-        saveMenuItem.addActionListener {
-            // Handle Save action
-            val fileChooser = JFileChooser()
-            val filter = FileNameExtensionFilter("Text files", "txt")
-            fileChooser.fileFilter = filter
-            val result = fileChooser.showSaveDialog(null)
-            if (result == JFileChooser.APPROVE_OPTION) {
-                val file = fileChooser.selectedFile
-                file.writeText(textPane.text)
-                fileNameLabel.text = file.name
-            }
-        }
+        // Save menu item action
+        saveMenuItem.addActionListener { saveFile(textPane) }
 
+        // New menu item action
         newMenuItem.addActionListener {
-            // Handle New action
             textPane.text = ""
             fileNameLabel.text = "Untitled"
         }
 
-        exitMenuItem.addActionListener {
-            // Handle Exit action
-            System.exit(0)
-        }
+        // Exit menu item action
+        exitMenuItem.addActionListener { System.exit(0) }
 
+        // Font menu item action
         fontMenuItem.addActionListener {
-            // Handle Font action
-            val fontDialog = FontDialog(textPane.font)
+            val fontDialog = FontDialog(textPane)
             fontDialog.isVisible = true
             val selectedFont = fontDialog.selectedFont
             if (selectedFont != null) {
@@ -124,67 +100,29 @@ class GUI : JFrame("Rich Text Box Example") {
             }
         }
 
+        // Text color menu item action
         textColorMenuItem.addActionListener {
-            // Handle Text Color action
-            val colorChooser = JColorChooser()
-            val result = Expression(colorChooser, "showDialog", arrayOf(null, "Choose Text Color", textPane.foreground)).value as Color?
-            if (result != null) {
-                textPane.foreground = result
-            }
+            val color = JColorChooser.showDialog(this, "Choose a color", Color.BLACK)
+            textPane.foreground = color
         }
 
+        // Spacing menu item action
         spacingMenuItem.addActionListener {
-            // Handle Spacing action
-            val spacingFrame = JFrame("Spacing")
-            spacingFrame.setSize(400, 200)
-            spacingFrame.setLocationRelativeTo(null)
-            spacingFrame.defaultCloseOperation = WindowConstants.DISPOSE_ON_CLOSE
-
-            val spacingPanel = JPanel(GridLayout(2, 2))
-            val topLabel = JLabel("Top:")
-            val topField = JTextField()
-            val bottomLabel = JLabel("Bottom:")
-            val bottomField = JTextField()
-            spacingPanel.add(topLabel)
-            spacingPanel.add(topField)
-            spacingPanel.add(bottomLabel)
-            spacingPanel.add(bottomField)
-
-            val buttonPanel = JPanel()
-            val okButton = JButton("OK")
-            okButton.addActionListener {
-                val top = topField.text.toIntOrNull() ?: 0
-                val bottom = bottomField.text.toIntOrNull() ?: 0
-                val spacing = SimpleAttributeSet()
-                StyleConstants.setSpaceAbove(spacing, top.toFloat())
-                StyleConstants.setSpaceBelow(spacing, bottom.toFloat())
-                textPane.styledDocument.setParagraphAttributes(0, textPane.styledDocument.length, spacing, false)
-                spacingFrame.dispose()
-            }
-            val cancelButton = JButton("Cancel")
-            cancelButton.addActionListener {
-                spacingFrame.dispose()
-            }
-            buttonPanel.add(okButton)
-            buttonPanel.add(cancelButton)
-
-            spacingFrame.add(spacingPanel, BorderLayout.CENTER)
-            spacingFrame.add(buttonPanel, BorderLayout.SOUTH)
-            spacingFrame.isVisible = true
+            val spacingDialog = SpacingDialog(textPane)
+            spacingDialog.isVisible = true
         }
 
+        fileMenu.add(newMenuItem)
         fileMenu.add(openMenuItem)
         fileMenu.add(saveMenuItem)
-        fileMenu.add(newMenuItem) // Add New menu item
-        fileMenu.addSeparator()
-        fileMenu.add(exitMenuItem) // Add Exit menu item
+        fileMenu.add(exitMenuItem)
+
+        editMenu.add(editorMenu)
 
         styleMenu.add(fontMenuItem)
         styleMenu.add(textColorMenuItem)
 
         editorMenu.add(spacingMenuItem)
-
-        editMenu.add(editorMenu)
 
         menuBar.add(fileMenu)
         menuBar.add(editMenu)
@@ -193,69 +131,124 @@ class GUI : JFrame("Rich Text Box Example") {
         return menuBar
     }
 
-    class LineAndCaretPositionCaretListener(
-            private val textPane: JTextPane,
-            private val lineCounter: JLabel,
-            private val caretPositionCounter: JLabel
-    ) : CaretListener {
-        override fun caretUpdate(e: CaretEvent) {
-            try {
-                val caretPosition = textPane.caretPosition
-                val line = textPane.document.defaultRootElement.getElementIndex(caretPosition) + 1
-                val lineStartOffset = textPane.document.defaultRootElement.getElement(line - 1).startOffset
-                val caretOffset = caretPosition - lineStartOffset
-                lineCounter.text = "Line: $line"
-                caretPositionCounter.text = "Column: $caretOffset"
-            } catch (ex: Exception) {
-                lineCounter.text = "Line: 1"
-                caretPositionCounter.text = "Column: 0"
-            }
+    private fun openFile(textPane: JTextPane) {
+        val fileChooser = JFileChooser()
+        val filter = FileNameExtensionFilter("Text Files", "txt")
+        fileChooser.fileFilter = filter
+
+        val result = fileChooser.showOpenDialog(this)
+
+        if (result == JFileChooser.APPROVE_OPTION) {
+            val selectedFile = fileChooser.selectedFile
+            textPane.text = selectedFile.readText()
+            fileNameLabel.text = selectedFile.name
         }
     }
 
-    class FontDialog(private val initialFont: Font) : JDialog() {
-        private val fontList = GraphicsEnvironment.getLocalGraphicsEnvironment().availableFontFamilyNames
-        var selectedFont: Font? = null
+    private fun saveFile(textPane: JTextPane) {
+        val fileChooser = JFileChooser()
 
-        init {
-            title = "Choose Font"
-            setSize(400, 200)
-            isModal = true
-            setLocationRelativeTo(null)
-            defaultCloseOperation = WindowConstants.DISPOSE_ON_CLOSE
+        val result = fileChooser.showSaveDialog(this)
 
-            val fontPreview = JLabel("Font Preview", JLabel.CENTER)
-            fontPreview.font = initialFont
-            add(fontPreview, BorderLayout.CENTER)
+        if (result == JFileChooser.APPROVE_OPTION) {
+            val selectedFile = fileChooser.selectedFile
+            selectedFile.writeText(textPane.text)
+            fileNameLabel.text = selectedFile.name
+        }
+    }
+}
 
-            val fontComboBox = JComboBox(fontList)
-            fontComboBox.addActionListener {
-                val selectedFontName = fontComboBox.selectedItem as String
-                val fontSize = fontPreview.font.size
-                val newFont = Font(selectedFontName, Font.PLAIN, fontSize)
-                fontPreview.font = newFont
+class FontDialog(private val textPane: JTextPane) : JDialog() {
+    private val fontList = GraphicsEnvironment.getLocalGraphicsEnvironment().availableFontFamilyNames
+    var selectedFont: Font? = null
+
+    init {
+        title = "Choose Font"
+        setSize(400, 200)
+        isModal = true
+        setLocationRelativeTo(null)
+        defaultCloseOperation = WindowConstants.DISPOSE_ON_CLOSE
+
+        val fontPreview = JLabel("Font Preview", JLabel.CENTER)
+        fontPreview.font = textPane.font
+        add(fontPreview, BorderLayout.CENTER)
+
+        val fontComboBox = JComboBox(fontList)
+        fontComboBox.addActionListener {
+            val selectedFontName = fontComboBox.selectedItem as String
+            val fontSize = fontPreview.font.size
+            val newFont = Font(selectedFontName, Font.PLAIN, fontSize)
+            fontPreview.font = newFont
+            fontPreview.repaint()
+        }
+
+        val buttonPanel = JPanel()
+        val selectButton = JButton("Select")
+        selectButton.addActionListener {
+            selectedFont = fontPreview.font
+            dispose()
+        }
+        val cancelButton = JButton("Cancel")
+        cancelButton.addActionListener {
+            dispose()
+        }
+        buttonPanel.add(fontComboBox)
+        buttonPanel.add(selectButton)
+        buttonPanel.add(cancelButton)
+        add(buttonPanel, BorderLayout.SOUTH)
+    }
+}
+
+class SpacingDialog(private val textPane: JTextPane) : JDialog() {
+    init {
+        title = "Set Spacing"
+        setSize(200, 150)
+        isModal = true
+        setLocationRelativeTo(null)
+        defaultCloseOperation = WindowConstants.DISPOSE_ON_CLOSE
+
+        val lineSpacing = (textPane.font.size * 0.5).toFloat()
+
+        val spinnerModel = SpinnerNumberModel(lineSpacing.toDouble(), 0.0, 10.0, 0.1)
+        val spinner = JSpinner(spinnerModel)
+
+        spinner.addChangeListener {
+            val value = spinner.value as Double
+            textPane.styledDocument.setParagraphAttributes(0, textPane.document.length, SimpleAttributeSet().apply {
+                StyleConstants.setLineSpacing(this, value.toFloat())
+            }, false)
+        }
+
+        val buttonPanel = JPanel()
+        val okButton = JButton("OK")
+        okButton.addActionListener {
+            dispose()
+        }
+        buttonPanel.add(spinner)
+        buttonPanel.add(okButton)
+
+        add(buttonPanel, BorderLayout.SOUTH)
+    }
+}
+
+class LineAndCaretPositionCaretListener(private val textPane: JTextPane, private val lineLabel: JLabel, private val caretPositionLabel: JLabel) : CaretListener {
+    override fun caretUpdate(e: CaretEvent?) {
+        if (e != null) {
+            val dot = e.dot
+            val doc = textPane.document
+            if (doc is StyledDocument) {
+                val rootElement = doc.defaultRootElement
+                val line = rootElement.getElementIndex(dot)
+                val startOfLineOffset = rootElement.getElement(line).startOffset
+                val column = dot - startOfLineOffset
+
+                lineLabel.text = "Line: ${line + 1}"
+                caretPositionLabel.text = "Column: ${column + 1}"
             }
-
-            val buttonPanel = JPanel()
-            val selectButton = JButton("Select")
-            selectButton.addActionListener {
-                selectedFont = fontPreview.font
-                dispose()
-            }
-            val cancelButton = JButton("Cancel")
-            cancelButton.addActionListener {
-                dispose()
-            }
-            buttonPanel.add(fontComboBox)
-            buttonPanel.add(selectButton)
-            buttonPanel.add(cancelButton)
-            add(buttonPanel, BorderLayout.SOUTH)
         }
     }
 }
 
 fun main() {
-    SwingUtilities.invokeLater {
-        GUI()
-    }
+    ImprovedGUI()
 }
