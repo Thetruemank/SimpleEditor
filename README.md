@@ -1,48 +1,35 @@
-# Rich Text Box Editor
+# SimpleEditor
 
-This is a simple Rich Text Box Editor implemented in Kotlin using Swing. It provides a graphical user interface with features like opening and saving text files, changing font styles, and setting text color.
+SimpleEditor is an open-source rich text editing application that aims to provide a user-friendly and accessible experience for all users. It enables users to create, edit, and save text files with ease, while focusing on inclusivity and usability.
 
 ## Features
 
-- Open and edit text files (.txt, .java, .kotlin, .xml, .html, .css, .js, .json)
-- Save edited text to a file
-- Change font style
-- Set text color
-- Line and caret position display
+- **Rich Text Editing**: Create and edit text documents with advanced formatting options.
+- **Font Selection**: Customize the appearance of your text by choosing from a wide range of fonts.
+- **Text Color**: Personalize your text by selecting custom colors for better visual appeal.
+- **File Management**: Open, save, and create new text files effortlessly.
+- **User-Friendly Interface**: Intuitive and easy-to-use interface for a seamless editing experience.
+- **Accessibility**: Ensuring the application is accessible to users with disabilities and follows accessibility standards.
 
-## Prerequisites
+## Why Accessibility Matters
 
-- Java Development Kit (JDK) 8 or above
-- Kotlin compiler
+At SimpleEditor, we believe in the importance of accessibility. Our goal is to make this application usable and enjoyable for all individuals, including those with disabilities. We strive to follow accessibility best practices, such as providing alternative text for images, keyboard navigation support, and adherence to color contrast guidelines. By prioritizing accessibility, we aim to ensure that everyone, regardless of their abilities, can fully utilize the application and participate in the digital world.
 
-## Getting Started
+## Open Source and Collaboration
 
-1. Clone the repository:
+SimpleEditor is an open-source project, welcoming contributions from developers worldwide. We believe in the power of collaboration and the collective effort to improve the software. By embracing the open-source philosophy, we encourage developers to contribute, suggest enhancements, and report issues. Together, we can make SimpleEditor a more robust, reliable, and user-friendly application.
 
-   ```bash
-   git clone https://github.com/your-username/rich-text-box-editor.git
+## Future Goals
 
-2. Compile the Kotlin source files:
+Our vision for SimpleEditor extends beyond its current features. We are committed to continuously improving the application and addressing the needs of our users. Our future goals include:
 
-bash
-Copy code
-kotlinc src/*.kt -include-runtime -d RichTextBoxEditor.jar
+- **Enhanced Usability**: Continuously refining the user interface and workflows to provide an intuitive and seamless experience.
+- **Expanded Accessibility**: Expanding accessibility features and ensuring compliance with accessibility standards for a broader user base.
+- **Additional Formatting Options**: Adding more formatting options to empower users to customize their text according to their preferences.
+- **Cross-Platform Support**: Extending support for different operating systems and platforms.
 
-3. Run the application:
+We appreciate your interest in SimpleEditor and welcome your contributions to this open-source project. Together, we can create a better, more inclusive editing experience for all users.
 
-bash
-Copy code
-java -jar RichTextBoxEditor.jar
-Usage
-Open: Select "File" > "Open" to open a text file for editing.
-Save: Select "File" > "Save" to save the edited text to a file.
-Font: Select "Style" > "Font" to change the font style of the text.
-Text Color: Select "Style" > "Text Color" to set the text color.
-Line and Carat Position: The current line number and caret position are displayed at the bottom left of the editor.
-Contributing
-Contributions are welcome! If you find any issues or have suggestions for improvement, please open an issue or submit a pull request.
+## License
 
-License
-This project is licensed under the MIT License.
-
-Feel free to modify the contents of the README file according to your specific
+SimpleEditor is released under the [MIT License](LICENSE).
