@@ -132,34 +132,28 @@ class ImprovedGUI : JFrame("Rich Text Box Example") {
     }
 
     private fun openFile(textPane: JTextPane) {
-        val fileChooser = JFileChooser()
-        val filter = FileNameExtensionFilter("Text Files", "txt")
-        fileChooser.fileFilter = filter
-
-        val result = fileChooser.showOpenDialog(this)
-
-        if (result == JFileChooser.APPROVE_OPTION) {
-            val selectedFile = fileChooser.selectedFile
-            textPane.text = selectedFile.readText()
+        val fileOperations = FileOperations()
+        val selectedFile = fileOperations.openFile(textPane)
+        if (selectedFile != null) {
             fileNameLabel.text = selectedFile.name
         }
     }
-
+    
     private fun saveFile(textPane: JTextPane) {
-        val fileChooser = JFileChooser()
-
-        val result = fileChooser.showSaveDialog(this)
-
-        if (result == JFileChooser.APPROVE_OPTION) {
-            val selectedFile = fileChooser.selectedFile
-            selectedFile.writeText(textPane.text)
+        val fileOperations = FileOperations()
+        val selectedFile = fileOperations.saveFile(textPane)
+        if (selectedFile != null) {
             fileNameLabel.text = selectedFile.name
         }
     }
 }
 
+object FontLoader {
+    val fontList = GraphicsEnvironment.getLocalGraphicsEnvironment().availableFontFamilyNames
+}
+
 class FontDialog(private val textPane: JTextPane) : JDialog() {
-    private val fontList = GraphicsEnvironment.getLocalGraphicsEnvironment().availableFontFamilyNames
+    private val fontList = FontLoader.fontList
     var selectedFont: Font? = null
 
     init {
@@ -232,6 +226,8 @@ class SpacingDialog(private val textPane: JTextPane) : JDialog() {
 }
 
 class LineAndCaretPositionCaretListener(private val textPane: JTextPane, private val lineLabel: JLabel, private val caretPositionLabel: JLabel) : CaretListener {
+    private var currentLine = 0
+    
     override fun caretUpdate(e: CaretEvent?) {
         if (e != null) {
             val dot = e.dot
@@ -241,11 +237,44 @@ class LineAndCaretPositionCaretListener(private val textPane: JTextPane, private
                 val line = rootElement.getElementIndex(dot)
                 val startOfLineOffset = rootElement.getElement(line).startOffset
                 val column = dot - startOfLineOffset
-
-                lineLabel.text = "Line: ${line + 1}"
+    
+                if (line != currentLine) {
+                    lineLabel.text = "Line: ${line + 1}"
+                    currentLine = line
+                }
                 caretPositionLabel.text = "Column: ${column + 1}"
             }
         }
+    }
+}
+
+class FileOperations {
+    fun openFile(textPane: JTextPane): File? {
+        val fileChooser = JFileChooser()
+        val filter = FileNameExtensionFilter("Text Files", "txt")
+        fileChooser.fileFilter = filter
+
+        val result = fileChooser.showOpenDialog(null)
+
+        if (result == JFileChooser.APPROVE_OPTION) {
+            val selectedFile = fileChooser.selectedFile
+            textPane.text = selectedFile.readText()
+            return selectedFile
+        }
+        return null
+    }
+
+    fun saveFile(textPane: JTextPane): File? {
+        val fileChooser = JFileChooser()
+
+        val result = fileChooser.showSaveDialog(null)
+
+        if (result == JFileChooser.APPROVE_OPTION) {
+            val selectedFile = fileChooser.selectedFile
+            selectedFile.writeText(textPane.text)
+            return selectedFile
+        }
+        return null
     }
 }
 
