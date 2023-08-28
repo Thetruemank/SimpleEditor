@@ -8,6 +8,13 @@ import javax.swing.filechooser.FileNameExtensionFilter
 import javax.swing.text.*
 import java.awt.GraphicsEnvironment
 import javax.swing.border.EmptyBorder
+import org.apache.poi.xwpf.usermodel.XWPFDocument
+import org.apache.poi.xwpf.usermodel.XWPFParagraph
+import org.apache.poi.xwpf.usermodel.XWPFRun
+import javax.swing.text.rtf.RTFEditorKit
+import org.apache.odftoolkit.simple.TextDocument
+import org.apache.odftoolkit.simple.table.Table
+import org.apache.odftoolkit.simple.text.Paragraph
 
 class ImprovedGUI : JFrame("Rich Text Box Example") {
     private val textPane: JTextPane = JTextPane()
@@ -253,17 +260,29 @@ class FileOperations {
         val fileChooser = JFileChooser()
         val filter = FileNameExtensionFilter("Text Files", "txt", "doc", "docx", "rtf", "odt")
         fileChooser.fileFilter = filter
-
+    
         val result = fileChooser.showOpenDialog(null)
-
+    
         if (result == JFileChooser.APPROVE_OPTION) {
-val selectedFile = fileChooser.selectedFile
+            val selectedFile = fileChooser.selectedFile
             val extension = selectedFile.extension
             when (extension) {
                 "txt" -> textPane.text = selectedFile.readText()
-                "doc", "docx", "rtf", "odt" -> {
-                    // Use appropriate method or library to read these file types
-                    // Add logic to read the content of the selected file based on its extension
+                "doc", "docx" -> {
+                    val doc = XWPFDocument(FileInputStream(selectedFile))
+                    val text = doc.paragraphs.joinToString("\n") { it.text }
+                    textPane.text = text
+                }
+                "rtf" -> {
+                    val kit = RTFEditorKit()
+                    val doc = kit.createDefaultDocument()
+                    kit.read(FileInputStream(selectedFile), doc, 0)
+                    textPane.document = doc
+                }
+                "odt" -> {
+                    val doc = TextDocument.loadDocument(selectedFile)
+                    val text = doc.paragraphIterator.asSequence().joinToString("\n") { it.textContent }
+                    textPane.text = text
                 }
             }
             return selectedFile
@@ -273,19 +292,33 @@ val selectedFile = fileChooser.selectedFile
 
     fun saveFile(textPane: JTextPane): File? {
         val fileChooser = JFileChooser()
-
+    
         val result = fileChooser.showSaveDialog(null)
-
+    
         if (result == JFileChooser.APPROVE_OPTION) {
             val selectedFile = fileChooser.selectedFile
-val extension = selectedFile.extension
-when (extension) {
+            val extension = selectedFile.extension
+            when (extension) {
                 "txt" -> selectedFile.writeText(textPane.text)
-                "doc", "docx", "rtf", "odt" -> {
-                    // Use appropriate method or library to write these file types
-                    // Add logic to write the content of the text pane to the selected file based on its extension
+                "doc", "docx" -> {
+                    val doc = XWPFDocument()
+                    val para = doc.createParagraph()
+                    val run = para.createRun()
+                    run.setText(textPane.text)
+                    doc.write(FileOutputStream(selectedFile))
                 }
-}
+                "rtf" -> {
+                    val kit = RTFEditorKit()
+                    val doc = kit.createDefaultDocument()
+                    doc.insertString(0, textPane.text, null)
+                    kit.write(FileOutputStream(selectedFile), doc, 0, doc.length)
+                }
+                "odt" -> {
+                    val doc = TextDocument.newTextDocument()
+                    doc.addParagraph(textPane.text)
+                    doc.save(selectedFile.path)
+                }
+            }
             return selectedFile
         }
         return null
