@@ -263,6 +263,7 @@ val selectedFile = fileChooser.selectedFile
                 "txt" -> textPane.text = selectedFile.readText()
                 "doc", "docx", "rtf", "odt" -> {
                     // Use appropriate method or library to read these file types
+                    // Add logic to read the content of the selected file based on its extension
                 }
             }
             return selectedFile
@@ -279,10 +280,11 @@ val selectedFile = fileChooser.selectedFile
             val selectedFile = fileChooser.selectedFile
 val extension = selectedFile.extension
 when (extension) {
-    "txt" -> selectedFile.writeText(textPane.text)
-    "doc", "docx", "rtf", "odt" -> {
-        // Use appropriate method or library to write these file types
-    }
+                "txt" -> selectedFile.writeText(textPane.text)
+                "doc", "docx", "rtf", "odt" -> {
+                    // Use appropriate method or library to write these file types
+                    // Add logic to write the content of the text pane to the selected file based on its extension
+                }
 }
             return selectedFile
         }
