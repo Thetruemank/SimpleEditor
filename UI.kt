@@ -251,14 +251,20 @@ class LineAndCaretPositionCaretListener(private val textPane: JTextPane, private
 class FileOperations {
     fun openFile(textPane: JTextPane): File? {
         val fileChooser = JFileChooser()
-        val filter = FileNameExtensionFilter("Text Files", "txt")
+        val filter = FileNameExtensionFilter("Text Files", "txt", "doc", "docx", "rtf", "odt")
         fileChooser.fileFilter = filter
 
         val result = fileChooser.showOpenDialog(null)
 
         if (result == JFileChooser.APPROVE_OPTION) {
-            val selectedFile = fileChooser.selectedFile
-            textPane.text = selectedFile.readText()
+val selectedFile = fileChooser.selectedFile
+            val extension = selectedFile.extension
+            when (extension) {
+                "txt" -> textPane.text = selectedFile.readText()
+                "doc", "docx", "rtf", "odt" -> {
+                    // Use appropriate method or library to read these file types
+                }
+            }
             return selectedFile
         }
         return null
@@ -271,7 +277,13 @@ class FileOperations {
 
         if (result == JFileChooser.APPROVE_OPTION) {
             val selectedFile = fileChooser.selectedFile
-            selectedFile.writeText(textPane.text)
+val extension = selectedFile.extension
+when (extension) {
+    "txt" -> selectedFile.writeText(textPane.text)
+    "doc", "docx", "rtf", "odt" -> {
+        // Use appropriate method or library to write these file types
+    }
+}
             return selectedFile
         }
         return null
