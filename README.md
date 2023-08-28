@@ -10,6 +10,7 @@ SimpleEditor is an open-source rich text editing application that aims to provid
 - **File Management**: Open, save, and create new text files effortlessly.
 - **User-Friendly Interface**: Intuitive and easy-to-use interface for a seamless editing experience.
 - **Accessibility**: Ensuring the application is accessible to users with disabilities and follows accessibility standards.
+- **Multiple File Type Support**: The application now supports multiple file types (.txt, .doc, .docx, .rtf, .odt).
 
 ## Why Accessibility Matters
 
