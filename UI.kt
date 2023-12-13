@@ -337,18 +337,20 @@ class FileOperations {
             val selectedFile = fileChooser.selectedFile
             val extension = selectedFile.extension
             when (extension) {
-                "txt" -> selectedFile.writeText(textPane.text)
                 "doc", "docx" -> {
                     val doc = XWPFDocument()
-                    val para = doc.createParagraph()
-                    val run = para.createRun()
-                    run.setText(textPane.text)
+                    textPane.text.split("\n").forEach { line ->
+                        val para = doc.createParagraph()
+                        val run = para.createRun()
+                        run.setText(line)
+                    }
                     doc.write(FileOutputStream(selectedFile))
                 }
-                "rtf" -> {
-                    val kit = RTFEditorKit()
-                    val doc = kit.createDefaultDocument()
-                    doc.insertString(0, textPane.text, null)
+            }
+            return selectedFile
+        }
+        return null
+    }
                     kit.write(FileOutputStream(selectedFile), doc, 0, doc.length)
                 }
                 "odt" -> {
