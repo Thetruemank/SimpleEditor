@@ -381,7 +381,12 @@ class FileOperations {
 }
 
 private fun findNext(searchStr: String) {
-    // Logic for finding the next occurrence of searchStr
+    val cursorPosition = textPane.caretPosition
+    val text = textPane.text
+    val index = text.indexOf(searchStr, cursorPosition)
+    if (index >= 0) {
+        textPane.caretPosition = index
+    }
 }
 
 private fun findPrevious(searchStr: String) {
