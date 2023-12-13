@@ -399,7 +399,13 @@ private fun findPrevious(searchStr: String) {
 }
 
 private fun replaceNext(searchStr: String, replaceStr: String) {
-    // Logic for replacing the next occurrence of searchStr with replaceStr
+    val startIndex = textPane.caretPosition
+    val text = textPane.text.substring(startIndex)
+    val newText = text.replaceFirst(searchStr, replaceStr)
+    if(newText != text) {
+        textPane.text = textPane.text.substring(0, startIndex) + newText
+        textPane.caretPosition = textPane.text.indexOf(replaceStr, startIndex)
+    }
 }
 
     private fun replaceAll(searchStr: String, replaceStr: String) {
