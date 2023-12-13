@@ -1,6 +1,7 @@
 import javax.swing.*
 import javax.swing.event.CaretListener
 import javax.swing.event.CaretEvent
+import javax.swing.undo.UndoManager
 import java.awt.*
 import java.beans.Expression
 import java.io.File
@@ -69,6 +70,13 @@ class ImprovedGUI : JFrame("Rich Text Box Example") {
 
         val fileMenu = JMenu("File")
         val editMenu = JMenu("Edit")
+        val undoMenuItem = JMenuItem("Undo")
+        val redoMenuItem = JMenuItem("Redo")
+        val copyMenuItem = JMenuItem("Copy")
+        val pasteMenuItem = JMenuItem("Paste")
+        val cutMenuItem = JMenuItem("Cut")
+        val findMenuItem = JMenuItem("Find")
+        val replaceMenuItem = JMenuItem("Replace")
         val styleMenu = JMenu("Style")
 
         val openMenuItem = JMenuItem("Open")
@@ -81,6 +89,29 @@ class ImprovedGUI : JFrame("Rich Text Box Example") {
 
         val editorMenu = JMenu("Editor")
         val spacingMenuItem = JMenuItem("Spacing")
+
+                // Undo menu item action
+        val undoManager = UndoManager()
+        textPane.document.addUndoableEditListener(undoManager)
+        undoMenuItem.addActionListener { if (undoManager.canUndo()) undoManager.undo() }
+
+        // Redo menu item action
+        redoMenuItem.addActionListener { if (undoManager.canRedo()) undoManager.redo() }
+
+        // Copy menu item action
+        copyMenuItem.addActionListener { textPane.copy() }
+
+        // Paste menu item action
+        pasteMenuItem.addActionListener { textPane.paste() }
+
+        // Cut menu item action
+        cutMenuItem.addActionListener { textPane.cut() }
+
+        // Find menu item action
+        findMenuItem.addActionListener { val findDialog = FindDialog(textPane); findDialog.isVisible = true }
+
+        // Replace menu item action
+        replaceMenuItem.addActionListener { val replaceDialog = ReplaceDialog(textPane); replaceDialog.isVisible = true }
 
         // Open menu item action
         openMenuItem.addActionListener { openFile(textPane) }
@@ -124,6 +155,13 @@ class ImprovedGUI : JFrame("Rich Text Box Example") {
         fileMenu.add(saveMenuItem)
         fileMenu.add(exitMenuItem)
 
+                editMenu.add(undoMenuItem)
+        editMenu.add(redoMenuItem)
+        editMenu.add(copyMenuItem)
+        editMenu.add(pasteMenuItem)
+        editMenu.add(cutMenuItem)
+        editMenu.add(findMenuItem)
+        editMenu.add(replaceMenuItem)
         editMenu.add(editorMenu)
 
         styleMenu.add(fontMenuItem)
@@ -322,7 +360,71 @@ class FileOperations {
                 }
             }
             return selectedFile
-        }
+        class FindDialog(private val textPane: JTextPane) : JDialog() {
+    init {
+        title = "Find"
+        setSize(300, 120)
+        setLayout(FlowLayout())
+        isModal = true
+        setLocationRelativeTo(textPane)
+        defaultCloseOperation = DISPOSE_ON_CLOSE
+
+        val findTextField = JTextField(15)
+        add(findTextField)
+
+        val findNextButton = JButton("Find Next")
+        findNextButton.addActionListener { findNext(findTextField.text) }
+        add(findNextButton)
+
+        val findPrevButton = JButton("Find Previous")
+        findPrevButton.addActionListener { findPrevious(findTextField.text) }
+        add(findPrevButton)
+    }
+}
+
+private fun findNext(searchStr: String) {
+    // Logic for finding the next occurrence of searchStr
+}
+
+private fun findPrevious(searchStr: String) {
+    // Logic for finding the previous occurrence of searchStr
+}
+
+private fun replaceNext(searchStr: String, replaceStr: String) {
+    // Logic for replacing the next occurrence of searchStr with replaceStr
+}
+
+    private fun replaceAll(searchStr: String, replaceStr: String) {
+        // Logic for replacing all occurrences of searchStr with replaceStr
+    }
+}
+}
+
+class ReplaceDialog(private val textPane: JTextPane) : JDialog() {
+    init {
+        title = "Replace"
+        setSize(400, 150)
+        setLayout(FlowLayout())
+        isModal = true
+        setLocationRelativeTo(textPane)
+        defaultCloseOperation = DISPOSE_ON_CLOSE
+
+        val findTextField = JTextField(15)
+        add(findTextField)
+
+        val replaceTextField = JTextField(15)
+        add(replaceTextField)
+
+        val replaceNextButton = JButton("Replace Next")
+        replaceNextButton.addActionListener { replaceNext(findTextField.text, replaceTextField.text) }
+        add(replaceNextButton)
+
+        val replaceAllButton = JButton("Replace All")
+        replaceAllButton.addActionListener { replaceAll(findTextField.text, replaceTextField.text) }
+        add(replaceAllButton)
+    }
+}
+}
         return null
     }
 }
