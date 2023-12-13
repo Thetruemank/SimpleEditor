@@ -390,7 +390,12 @@ private fun findNext(searchStr: String) {
 }
 
 private fun findPrevious(searchStr: String) {
-    // Logic for finding the previous occurrence of searchStr
+    val cursorPosition = textPane.caretPosition
+    val text = textPane.text
+    val index = text.lastIndexOf(searchStr, cursorPosition - 1)
+    if (index >= 0) {
+        textPane.caretPosition = index
+    }
 }
 
 private fun replaceNext(searchStr: String, replaceStr: String) {
