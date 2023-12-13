@@ -409,7 +409,7 @@ private fun replaceNext(searchStr: String, replaceStr: String) {
 }
 
     private fun replaceAll(searchStr: String, replaceStr: String) {
-        // Logic for replacing all occurrences of searchStr with replaceStr
+        textPane.text = textPane.text.replace(searchStr, replaceStr)
     }
 }
 }
