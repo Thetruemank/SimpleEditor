@@ -383,19 +383,35 @@ class FileOperations {
 }
 
 private fun findNext(searchStr: String) {
-    // Logic for finding the next occurrence of searchStr
+    val cursorPosition = textPane.caretPosition
+    val text = textPane.text
+    val index = text.indexOf(searchStr, cursorPosition)
+    if (index >= 0) {
+        textPane.caretPosition = index
+    }
 }
 
 private fun findPrevious(searchStr: String) {
-    // Logic for finding the previous occurrence of searchStr
+    val cursorPosition = textPane.caretPosition
+    val text = textPane.text
+    val index = text.lastIndexOf(searchStr, cursorPosition - 1)
+    if (index >= 0) {
+        textPane.caretPosition = index
+    }
 }
 
 private fun replaceNext(searchStr: String, replaceStr: String) {
-    // Logic for replacing the next occurrence of searchStr with replaceStr
+    val startIndex = textPane.caretPosition
+    val text = textPane.text.substring(startIndex)
+    val newText = text.replaceFirst(searchStr, replaceStr)
+    if(newText != text) {
+        textPane.text = textPane.text.substring(0, startIndex) + newText
+        textPane.caretPosition = textPane.text.indexOf(replaceStr, startIndex)
+    }
 }
 
     private fun replaceAll(searchStr: String, replaceStr: String) {
-        // Logic for replacing all occurrences of searchStr with replaceStr
+        textPane.text = textPane.text.replace(searchStr, replaceStr)
     }
 }
 }
