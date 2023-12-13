@@ -11,6 +11,10 @@ SimpleEditor is an open-source rich text editing application that aims to provid
 - **User-Friendly Interface**: Intuitive and easy-to-use interface for a seamless editing experience.
 - **Accessibility**: Ensuring the application is accessible to users with disabilities and follows accessibility standards.
 - **Multiple File Type Support**: The application now supports multiple file types (.txt, .doc, .docx, .rtf, .odt).
+- **Undo and Redo**: Effortlessly undo or redo your latest changes with the new Undo and Redo options.
+- **Copy, Cut, and Paste**: Easily replicate, remove, or place text within your document using the new Copy, Cut, and Paste features.
+- **Find**: Quickly locate specific text in your document with the Find feature.
+- **Replace**: Replace text in your document seamlessly using the Replace feature.
 
 ## Why Accessibility Matters
 
@@ -28,6 +32,8 @@ Our vision for SimpleEditor extends beyond its current features. We are committe
 - **Expanded Accessibility**: Expanding accessibility features and ensuring compliance with accessibility standards for a broader user base.
 - **Additional Formatting Options**: Adding more formatting options to empower users to customize their text according to their preferences.
 - **Cross-Platform Support**: Extending support for different operating systems and platforms.
+
+Please note that screenshots in the documentation may not reflect the most recent changes to the GUI. Updated screenshots are planned and will be added to the documentation soon.
 
 We appreciate your interest in SimpleEditor and welcome your contributions to this open-source project. Together, we can create a better, more inclusive editing experience for all users.
 
